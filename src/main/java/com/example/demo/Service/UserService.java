@@ -6,6 +6,8 @@ import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -21,7 +23,7 @@ public class UserService {
         String password = generateRandomPassword();
         user.setPassword(password);
         User createdUser = userRepository.save(user);
-        sendWelcomeEmail(user.getEmail(), password);
+        sendWelcomeEmail(user.getEmail(), user.getUsername(), password);
         return createdUser;
     }
 
@@ -36,9 +38,52 @@ public class UserService {
         return sb.toString();
     }
 
-    private void sendWelcomeEmail(String username, String password) throws MessagingException {
+    private void sendWelcomeEmail(String email,String username, String password) throws MessagingException {
         String subject = "Welcome to Our Platform!";
         String body = "Hello " + username + ",\n\nYour account has been created successfully.\nYour password is: " + password + "\n\nBest regards,\nThe Team";
-        emailService.sendEmail(username,password,body);
+        emailService.sendEmail(email, password, body);
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    public User updateUser(int userId, String newName, String newEmail) throws MessagingException {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            boolean nameChanged = false;
+            boolean emailChanged = false;
+
+            if (newName != null && !newName.isEmpty() && !newName.equals(user.getUsername())) {
+                user.setUsername(newName);
+                nameChanged = true;
+            }
+
+            if (newEmail != null && !newEmail.isEmpty() && !newEmail.equals(user.getEmail())) {
+                user.setEmail(newEmail);
+                emailChanged = true;
+            }
+            User updatedUser = userRepository.save(user);
+            if (nameChanged || emailChanged) {
+                String subject = "Account Information Update Notification";
+                String body = "Hello " + user.getUsername() + ",\n\nYour account information has been successfully updated.";
+
+                if (nameChanged) {
+                    body += "\n\nNew Name: " + user.getUsername();
+                }
+                if (emailChanged) {
+                    body += "\n\nNew Email: " + user.getEmail();
+                }
+
+                emailService.sendEmail(user.getEmail(), subject, body);
+            }
+
+            return updatedUser;
+        } else {
+            throw new RuntimeException("User not found");
+        }
     }
 }
+

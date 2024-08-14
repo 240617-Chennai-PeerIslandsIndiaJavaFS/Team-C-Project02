@@ -15,12 +15,12 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public void sendEmail(String to, String password, String body) throws MessagingException {
+    public void sendEmail(String to, String subject, String body) throws MessagingException {
         MimeMessage message=mailSender.createMimeMessage();
         MimeMessageHelper messageHelper=new MimeMessageHelper(message,true,"UTF-8");
         messageHelper.setTo(to);
-        messageHelper.setSubject("Your New Account Details");
-        messageHelper.setText("Your new account has been created. Your password is: " + password);
+        messageHelper.setSubject(subject);
+        messageHelper.setText(body);
 
         mailSender.send(message);
     }
