@@ -1,4 +1,4 @@
-package com.example.demo.UserTestCase;
+package com.example.demo.UserMVCTest;
 
 import com.example.demo.Controller.UserController;
 import com.example.demo.Models.User;
@@ -16,11 +16,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @WebMvcTest(UserController.class)
-public class UserTest {
+public class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -56,5 +57,39 @@ public class UserTest {
                         .content("{ \"username\": \"abcd\" }"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().string("Error creating user: Creation error"));
+    }
+
+    @Test
+    public void testUpdateUser_Success() throws Exception {
+        int userId = 1;
+        String newName = "abcd";
+        String newEmail = "abcd@gmail.com";
+        User mockUser = new User();
+        mockUser.setUsername(newName);
+        mockUser.setEmail(newEmail);
+
+        when(userService.updateUser(userId, newName, newEmail)).thenReturn(mockUser);
+        mockMvc.perform(put("/api/users/update/{userId}", userId)
+                        .param("newName", newName)
+                        .param("newEmail", newEmail)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string("User updated successfully: " + newName));
+    }
+
+    @Test
+    public void testUpdateUser_Failure() throws Exception {
+        int userId = 1;
+        String newName = "abcd";
+        String newEmail = "abcd@gmail.com";
+
+        when(userService.updateUser(userId, newName, newEmail))
+                .thenThrow(new RuntimeException("User not found"));
+        mockMvc.perform(put("/api/users/update/{userId}", userId)
+                        .param("newName", newName)
+                        .param("newEmail", newEmail)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Error updating user: User not found"));
     }
 }

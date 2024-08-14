@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.UserMVCTest;
 
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
