@@ -1,5 +1,6 @@
 package com.example.demo.Service;
 
+import com.example.demo.Enums.Role;
 import com.example.demo.Models.User;
 import com.example.demo.Repository.UserRepository;
 import jakarta.mail.MessagingException;
@@ -84,6 +85,45 @@ public class UserService {
         } else {
             throw new RuntimeException("User not found");
         }
+    }
+
+    public User assignAccessLevel(int userId, String newRole) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            boolean roleChanged = false;
+
+            if (!newRole.equalsIgnoreCase(user.getRole().name())) {
+                user.setRole(Role.valueOf(newRole.toUpperCase()));
+                roleChanged = true;
+            }
+
+            User updatedUser = userRepository.save(user);
+
+            if (roleChanged) {
+                // Construct email subject and body
+                String subject = "Role Update Notification";
+                String body = "Hello " + user.getUsername() + ",\n\nYour role has been updated.\n\n" +
+                        "New Role: " + user.getRole().name();
+
+                try {
+                    emailService.sendEmail(user.getEmail(), subject, body);
+                } catch (MessagingException e) {
+                    throw new RuntimeException("Failed to send email: " + e.getMessage());
+                }
+            }
+
+            return updatedUser;
+        } else {
+            throw new RuntimeException("User not found");
+        }
+    }
+
+
+
+    public User getUserById(int userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
     }
 }
 

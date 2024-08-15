@@ -1,11 +1,13 @@
 package com.example.demo.UserMVCTest;
 
 import com.example.demo.Controller.UserController;
+import com.example.demo.Enums.Role;
 import com.example.demo.Models.User;
 import com.example.demo.Service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -14,7 +16,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 
-import static org.mockito.ArgumentMatchers.any;
+import java.util.Map;
+
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,9 +33,12 @@ public class UserControllerTest {
     @MockBean
     private UserService userService;
 
+    private ObjectMapper objectMapper;
+
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+
+        objectMapper = new ObjectMapper();
     }
 
     @Test
@@ -91,5 +98,38 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().string("Error updating user: User not found"));
+    }
+
+    @Test
+    void testAssignAccessLevelSuccess() throws Exception {
+        int userId = 1;
+        String newRole = "ADMIN";
+
+        User updatedUser = new User();
+        updatedUser.setUserid(userId);
+        updatedUser.setRole(Role.valueOf(newRole));
+
+        Mockito.when(userService.assignAccessLevel(userId, newRole)).thenReturn(updatedUser);
+
+        mockMvc.perform(put("/api/users/assign-role/{userId}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(Map.of("newRole", newRole))))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Role updated successfully to: ADMIN"));
+    }
+
+    @Test
+    void testAssignAccessLevelFailure() throws Exception {
+        int userId = 1;
+        String newRole = "ADMIN";
+        String errorMessage = "User not found";
+
+        Mockito.when(userService.assignAccessLevel(userId, newRole)).thenThrow(new RuntimeException(errorMessage));
+
+        mockMvc.perform(put("/api/users/assign-role/{userId}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(Map.of("newRole", newRole))))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Error updating role: " + errorMessage));
     }
 }
