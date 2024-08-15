@@ -18,7 +18,15 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private EmailService emailService;  // Inject EmailService
+    private EmailService emailService;
+
+    public User authenticateUser(String email, String password) {
+        User user = userRepository.findByEmail(email);
+        if (user != null && user.getPassword().equals(password)) {
+            return user;
+        }
+        return null;
+    }
 
     public User createUser(User user) throws MessagingException {
         String password = generateRandomPassword();
@@ -102,7 +110,6 @@ public class UserService {
             User updatedUser = userRepository.save(user);
 
             if (roleChanged) {
-                // Construct email subject and body
                 String subject = "Role Update Notification";
                 String body = "Hello " + user.getUsername() + ",\n\nYour role has been updated.\n\n" +
                         "New Role: " + user.getRole().name();
@@ -118,12 +125,6 @@ public class UserService {
         } else {
             throw new RuntimeException("User not found");
         }
-    }
-
-
-
-    public User getUserById(int userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
     }
 }
 

@@ -17,6 +17,23 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        String password = body.get("password");
+
+        try {
+            User user = userService.authenticateUser(email, password);
+            if (user != null) {
+                return new ResponseEntity<>(user, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Invalid email or password.", HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error during authentication: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping("/create")
     public ResponseEntity<String> createUser(@RequestBody User user) {
         System.out.println("Received user: " + user);
