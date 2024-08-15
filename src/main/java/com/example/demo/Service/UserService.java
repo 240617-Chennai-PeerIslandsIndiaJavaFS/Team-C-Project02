@@ -1,5 +1,6 @@
 package com.example.demo.Service;
 
+import com.example.demo.Enums.Role;
 import com.example.demo.Models.User;
 import com.example.demo.Repository.UserRepository;
 import jakarta.mail.MessagingException;
@@ -17,7 +18,15 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private EmailService emailService;  // Inject EmailService
+    private EmailService emailService;
+
+    public User authenticateUser(String email, String password) {
+        User user = userRepository.findByEmail(email);
+        if (user != null && user.getPassword().equals(password)) {
+            return user;
+        }
+        return null;
+    }
 
     public User createUser(User user) throws MessagingException {
         String password = generateRandomPassword();
@@ -78,6 +87,38 @@ public class UserService {
                 }
 
                 emailService.sendEmail(user.getEmail(), subject, body);
+            }
+
+            return updatedUser;
+        } else {
+            throw new RuntimeException("User not found");
+        }
+    }
+
+    public User assignAccessLevel(int userId, String newRole) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            boolean roleChanged = false;
+
+            if (!newRole.equalsIgnoreCase(user.getRole().name())) {
+                user.setRole(Role.valueOf(newRole.toUpperCase()));
+                roleChanged = true;
+            }
+
+            User updatedUser = userRepository.save(user);
+
+            if (roleChanged) {
+                String subject = "Role Update Notification";
+                String body = "Hello " + user.getUsername() + ",\n\nYour role has been updated.\n\n" +
+                        "New Role: " + user.getRole().name();
+
+                try {
+                    emailService.sendEmail(user.getEmail(), subject, body);
+                } catch (MessagingException e) {
+                    throw new RuntimeException("Failed to send email: " + e.getMessage());
+                }
             }
 
             return updatedUser;
