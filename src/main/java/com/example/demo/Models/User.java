@@ -1,9 +1,7 @@
 package com.example.demo.Models;
 
 import com.example.demo.Enums.Role;
-
 import jakarta.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -29,7 +27,8 @@ public class User {
     public User() {
     }
 
-    public User(String username, String email, String password, Role role) {
+    public User(int userid, String username, String email, String password, Role role) {
+        this.userid = userid;
         this.username = username;
         this.email = email;
         this.password = password;
@@ -75,5 +74,4 @@ public class User {
     public void setRole(Role role) {
         this.role = role;
     }
-
 }
