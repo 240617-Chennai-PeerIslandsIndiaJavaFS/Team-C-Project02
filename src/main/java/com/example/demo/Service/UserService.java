@@ -47,10 +47,10 @@ public class UserService {
         return sb.toString();
     }
 
-    private void sendWelcomeEmail(String email,String username, String password) throws MessagingException {
+    private void sendWelcomeEmail(String email, String username, String password) throws MessagingException {
         String subject = "Welcome to Our Platform!";
         String body = "Hello " + username + ",\n\nYour account has been created successfully.\nYour password is: " + password + "\n\nBest regards,\nThe Team";
-        emailService.sendEmail(email, password, body);
+        emailService.sendEmail(email, subject, body);
     }
 
     public List<User> getAllUsers() {
@@ -126,5 +126,16 @@ public class UserService {
             throw new RuntimeException("User not found");
         }
     }
-}
 
+    public User findByNameAndEmail(String username, String email) {
+        return userRepository.findByUsernameAndEmail(username, email);
+    }
+
+
+    public void updatePassword(int userId, String newPassword) {
+        User user = userRepository.findById(userId).orElseThrow();
+        user.setPassword(newPassword);
+
+        userRepository.save(user);
+    }
+}

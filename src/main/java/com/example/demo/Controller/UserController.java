@@ -1,6 +1,8 @@
 package com.example.demo.Controller;
 
 import com.example.demo.Models.User;
+import com.example.demo.Service.EmailService;
+import com.example.demo.Service.OtpService;
 import com.example.demo.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,12 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private OtpService otpService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
@@ -77,5 +85,7 @@ public class UserController {
         } catch (Exception e) {
             return new ResponseEntity<>("Error updating role: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
     }
+
 }
