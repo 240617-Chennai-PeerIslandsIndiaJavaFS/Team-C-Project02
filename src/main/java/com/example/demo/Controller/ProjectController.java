@@ -30,4 +30,21 @@ public class ProjectController {
         List<Project> projects = projectService.getAllProjects();
         return ResponseEntity.ok(projects);
     }
+
+    @GetMapping("/by-username")
+    public List<Project> getProjectsByUsername(@RequestParam("username") String username) {
+        return projectService.getProjectsByUsername(username); // Call service method to fetch projects
+    }
+
+    @PutMapping("/{projectId}/add-team-member/{userId}")
+    public ResponseEntity<String> addTeamMemberToProject(
+            @PathVariable int projectId,
+            @PathVariable int userId) {
+        try {
+            String result = projectService.addTeamMemberToProject(projectId, userId);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+    }
 }
