@@ -2,6 +2,7 @@ package com.example.demo.Controller;
 
 
 import com.example.demo.Models.Project;
+import com.example.demo.Models.User;
 import com.example.demo.Service.ProjectService;
 import com.example.demo.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/projects")
@@ -46,5 +48,15 @@ public class ProjectController {
         } catch (Exception e) {
             return ResponseEntity.status(404).body(e.getMessage());
         }
+    }
+
+    @GetMapping("/teamMembers")
+    public Set<User> getTeamMembersByProjectName(@RequestParam String projectName) {
+        return projectService.getTeamMembersByProjectName(projectName);
+    }
+
+    @GetMapping("/getTeamMembersByProjectId")
+    public Set<User> getTeamMembersByProjectId(@RequestParam int projectId) {
+        return projectService.getTeamMembersByProjectId(projectId);
     }
 }
