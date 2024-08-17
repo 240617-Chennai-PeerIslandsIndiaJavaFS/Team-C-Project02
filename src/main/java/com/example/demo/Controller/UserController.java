@@ -105,4 +105,9 @@ public class UserController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @PutMapping("/{userid}/password")
+    public String resetPassword(@PathVariable int userid, @RequestParam String newPassword) {
+        return userService.resetPassword(userid, newPassword);
+    }
+
 }
