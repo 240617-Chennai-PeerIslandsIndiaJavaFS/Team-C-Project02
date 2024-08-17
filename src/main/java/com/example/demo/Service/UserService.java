@@ -138,4 +138,18 @@ public class UserService {
 
         userRepository.save(user);
     }
+
+    public List<User> getAllTeamMembers() {
+        return userRepository.findByRole(Role.TEAM_MEMBER); // Fetch users with TEAM_MEMBER role
+    }
+
+    public List<User> getProjectManagers() {
+        return userRepository.findByRole(Role.PROJECT_MANAGER);
+    }
+
+    public Optional<User> getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+
 }

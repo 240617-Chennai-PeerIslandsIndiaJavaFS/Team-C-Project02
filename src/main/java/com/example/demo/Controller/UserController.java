@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -85,7 +86,23 @@ public class UserController {
         } catch (Exception e) {
             return new ResponseEntity<>("Error updating role: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
 
+    @GetMapping("/team-members")
+    public List<User> getAllTeamMembers() {
+        return userService.getAllTeamMembers(); // Call service method to fetch team members
+    }
+
+    @GetMapping("/project-managers")
+    public List<User> getAllProjectManagers() {
+        return userService.getProjectManagers();
+    }
+
+    @GetMapping("/by-username")
+    public ResponseEntity<User> getUserByUsername(@RequestParam String username) {
+        Optional<User> user = userService.getUserByUsername(username);
+        return user.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
 }
