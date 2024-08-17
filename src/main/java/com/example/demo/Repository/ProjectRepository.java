@@ -10,5 +10,7 @@ import java.util.List;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Integer> {
+    @Query("SELECT p FROM Project p WHERE p.projectManager.username = :username")
+    List<Project> findProjectsByUsername(@Param("username") String username);
 
 }
