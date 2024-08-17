@@ -29,4 +29,11 @@ public class TaskController {
     public List<Task> getTasksByUsername(@PathVariable String username) {
         return taskService.getTasksByUsername(username);
     }
+
+    @PutMapping("/update-milestone")
+    public Task updateTaskMilestone(
+            @RequestParam int taskId,
+            @RequestParam int milestoneId) {
+        return taskService.updateTaskMilestone(taskId, milestoneId);
+    }
 }
