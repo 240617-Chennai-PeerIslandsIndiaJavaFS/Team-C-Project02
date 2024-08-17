@@ -4,6 +4,7 @@ import com.example.demo.Enums.Role;
 import com.example.demo.Models.User;
 import com.example.demo.Repository.UserRepository;
 import jakarta.mail.MessagingException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -149,6 +150,16 @@ public class UserService {
 
     public Optional<User> getUserByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    @Transactional
+    public String resetPassword(int userid, String newPassword) {
+        int updatedRows = userRepository.resetPasswordById(userid, newPassword);
+        if (updatedRows > 0) {
+            return "Password updated successfully!";
+        } else {
+            return "User not found!";
+        }
     }
 
 
