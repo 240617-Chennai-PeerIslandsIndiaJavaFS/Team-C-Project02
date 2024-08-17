@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ProjectService {
@@ -43,5 +44,22 @@ public class ProjectService {
         projectRepository.save(project);
 
         return "Team member added successfully!";
+    }
+
+    public Set<User> getTeamMembersByProjectName(String projectName) {
+        Project project = projectRepository.findByProjectName(projectName);
+        if (project != null) {
+            return project.getTeamMembers();
+        } else {
+            return Set.of(); // Return an empty set if project is not found
+        }
+    }
+
+    public Set<User> getTeamMembersByProjectId(int projectId) {
+        Project project = projectRepository.findByProjectId(projectId);
+        if (project != null) {
+            return project.getTeamMembers();
+        }
+        return null; // Or throw an exception if project not found
     }
 }
