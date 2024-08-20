@@ -1,16 +1,19 @@
 package com.example.demo.Service;
 
 import com.example.demo.Enums.Role;
+import com.example.demo.Enums.Status;
+import com.example.demo.Models.Client;
+import com.example.demo.Models.Project;
+import com.example.demo.Models.Task;
 import com.example.demo.Models.User;
+import com.example.demo.Repository.ProjectRepository;
 import com.example.demo.Repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -20,6 +23,10 @@ public class UserService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private ProjectRepository projectRepository;
+
 
     public User authenticateUser(String email, String password) {
         User user = userRepository.findByEmail(email);
@@ -58,13 +65,14 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User updateUser(int userId, String newName, String newEmail) throws MessagingException {
+    public User updateUser(int userId, String newName, String newEmail, Status newStatus) throws MessagingException {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
 
             boolean nameChanged = false;
             boolean emailChanged = false;
+            boolean statusChanged = false;
 
             if (newName != null && !newName.isEmpty() && !newName.equals(user.getUsername())) {
                 user.setUsername(newName);
@@ -75,19 +83,29 @@ public class UserService {
                 user.setEmail(newEmail);
                 emailChanged = true;
             }
+
+            if (newStatus != null && !newStatus.equals(user.getStatus())) {
+                user.setStatus(newStatus);
+                statusChanged = true;
+            }
+
             User updatedUser = userRepository.save(user);
-            if (nameChanged || emailChanged) {
+
+            if (nameChanged || emailChanged || statusChanged) {
                 String subject = "Account Information Update Notification";
-                String body = "Hello " + user.getUsername() + ",\n\nYour account information has been successfully updated.";
+                StringBuilder body = new StringBuilder("Hello " + user.getUsername() + ",\n\nYour account information has been successfully updated.");
 
                 if (nameChanged) {
-                    body += "\n\nNew Name: " + user.getUsername();
+                    body.append("\n\nNew Name: ").append(user.getUsername());
                 }
                 if (emailChanged) {
-                    body += "\n\nNew Email: " + user.getEmail();
+                    body.append("\n\nNew Email: ").append(user.getEmail());
+                }
+                if (statusChanged) {
+                    body.append("\n\nNew Status: ").append(user.getStatus());
                 }
 
-                emailService.sendEmail(user.getEmail(), subject, body);
+                emailService.sendEmail(user.getEmail(), subject, body.toString());
             }
 
             return updatedUser;
@@ -95,6 +113,7 @@ public class UserService {
             throw new RuntimeException("User not found");
         }
     }
+
 
     public User assignAccessLevel(int userId, String newRole) {
         Optional<User> userOptional = userRepository.findById(userId);
@@ -160,6 +179,39 @@ public class UserService {
         } else {
             return "User not found!";
         }
+    }
+
+    public Set<User> getTeamMembersByManagerName(String managerName) {
+        List<Project> projects = projectRepository.findProjectsByProjectManagerName(managerName);
+        Set<User> teamMembers = new HashSet<>();
+
+        for (Project project : projects) {
+            teamMembers.addAll(project.getTeamMembers());
+        }
+
+        return teamMembers;
+    }
+
+    public Set<Client> getClientsByManagerName(String managerName) {
+        List<Project> projects = projectRepository.findProjectsByProjectManagerName(managerName);
+        Set<Client> clients = new HashSet<>();
+
+        for (Project project : projects) {
+            clients.add(project.getClient());
+        }
+
+        return clients;
+    }
+
+    public Set<Task> getTasksByManagerName(String managerName) {
+        List<Project> projects = projectRepository.findProjectsByProjectManagerName(managerName);
+        Set<Task> tasks = new HashSet<>();
+
+        for (Project project : projects) {
+            tasks.addAll(project.getTasks());
+        }
+
+        return tasks;
     }
 
 

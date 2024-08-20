@@ -17,4 +17,7 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 
     Project findByProjectId(int projectId);
 
+    @Query("SELECT p FROM Project p WHERE p.projectManager.username = :managerName")
+    List<Project> findProjectsByProjectManagerName(@Param("managerName") String managerName);
+
 }

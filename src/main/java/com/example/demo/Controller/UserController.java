@@ -1,5 +1,8 @@
 package com.example.demo.Controller;
 
+import com.example.demo.Enums.Status;
+import com.example.demo.Models.Client;
+import com.example.demo.Models.Task;
 import com.example.demo.Models.User;
 import com.example.demo.Service.EmailService;
 import com.example.demo.Service.OtpService;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/users")
@@ -63,15 +67,17 @@ public class UserController {
     public ResponseEntity<String> updateUser(
             @PathVariable int userId,
             @RequestParam(required = false) String newName,
-            @RequestParam(required = false) String newEmail) {
+            @RequestParam(required = false) String newEmail,
+            @RequestParam(required = false) Status newStatus) {
 
         try {
-            User updatedUser = userService.updateUser(userId, newName, newEmail);
+            User updatedUser = userService.updateUser(userId, newName, newEmail, newStatus);
             return new ResponseEntity<>("User updated successfully: " + updatedUser.getUsername(), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Error updating user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     @PutMapping("/assign-role/{userId}")
     public ResponseEntity<String> assignAccessLevel(
@@ -108,6 +114,21 @@ public class UserController {
     @PutMapping("/{userid}/password")
     public String resetPassword(@PathVariable int userid, @RequestParam String newPassword) {
         return userService.resetPassword(userid, newPassword);
+    }
+
+    @GetMapping("/team-members-by-manager")
+    public Set<User> getTeamMembersByManager(@RequestParam String managerName) {
+        return userService.getTeamMembersByManagerName(managerName);
+    }
+
+    @GetMapping("/clients-by-manager")
+    public Set<Client> getClientsByManager(@RequestParam String managerName) {
+        return userService.getClientsByManagerName(managerName);
+    }
+
+    @GetMapping("/tasks-by-manager")
+    public Set<Task> getTasksByManager(@RequestParam String managerName) {
+        return userService.getTasksByManagerName(managerName);
     }
 
 }

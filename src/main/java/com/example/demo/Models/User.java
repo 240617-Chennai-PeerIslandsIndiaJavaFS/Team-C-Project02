@@ -1,6 +1,7 @@
 package com.example.demo.Models;
 
 import com.example.demo.Enums.Role;
+import com.example.demo.Enums.Status;
 import jakarta.persistence.*;
 
 @Entity
@@ -24,15 +25,20 @@ public class User {
     @Column(name = "role", nullable = false)
     private Role role;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private Status status;
+
     public User() {
     }
 
-    public User(int userid, String username, String email, String password, Role role) {
+    public User(int userid, String username, String email, String password, Role role, Status status) {
         this.userid = userid;
         this.username = username;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.status = status;
     }
 
     public int getUserid() {
@@ -73,5 +79,13 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }
