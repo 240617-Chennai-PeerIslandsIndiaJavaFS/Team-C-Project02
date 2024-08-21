@@ -27,20 +27,15 @@ public class ProjectService {
     }
 
     public List<Project> getProjectsByUsername(String username) {
-        return projectRepository.findProjectsByUsername(username); // Fetch projects by username
+        return projectRepository.findProjectsByUsername(username);
     }
 
     public String addTeamMemberToProject(int projectId, int userId) throws Exception {
-        // Retrieve the project and user
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new Exception("Project not found"));
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new Exception("User not found"));
-
-        // Add the user to the project
         project.getTeamMembers().add(user);
-
-        // Save the updated project
         projectRepository.save(project);
 
         return "Team member added successfully!";
@@ -51,7 +46,7 @@ public class ProjectService {
         if (project != null) {
             return project.getTeamMembers();
         } else {
-            return Set.of(); // Return an empty set if project is not found
+            return Set.of();
         }
     }
 
@@ -60,6 +55,6 @@ public class ProjectService {
         if (project != null) {
             return project.getTeamMembers();
         }
-        return null; // Or throw an exception if project not found
+        return null;
     }
 }

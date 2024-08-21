@@ -11,36 +11,33 @@ public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "client_id") // Custom column name
+    @Column(name = "client_id")
     private int clientId;
 
-    @Column(name = "client_name", nullable = false) // Custom column name
+    @Column(name = "client_name", nullable = false)
     private String clientName;
 
-    @Column(name = "client_email", nullable = false, unique = true) // Custom column name
+    @Column(name = "client_email", nullable = false, unique = true)
     private String clientEmail;
 
-    @Column(name = "client_description", columnDefinition = "TEXT") // Custom column name
+    @Column(name = "client_description", columnDefinition = "TEXT")
     private String clientDescription;
 
     @JsonIgnoreProperties("client")
     @JsonIgnore
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Column(name = "projects") // Custom column name for the set of projects
+    @Column(name = "projects")
     private Set<Project> projects;
 
-    // Default constructor
+
     public Client() {}
 
-    // Parameterized constructor
     public Client(int clientId, String clientName, String clientEmail, String clientDescription) {
         this.clientId = clientId;
         this.clientName = clientName;
         this.clientEmail = clientEmail;
         this.clientDescription = clientDescription;
     }
-
-    // Getters and Setters
     public int getClientId() {
         return clientId;
     }

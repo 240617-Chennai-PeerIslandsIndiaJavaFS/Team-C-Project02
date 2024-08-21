@@ -2,11 +2,14 @@ package com.example.demo.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "project")
 public class Project {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,15 +37,13 @@ public class Project {
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private Set<User> teamMembers;
+    private Set<User> teamMembers = new HashSet<>();
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Task> tasks;
 
-    // Default constructor
     public Project() {}
 
-    // Parameterized constructor
     public Project(int projectId, String projectName, String projectDetails, Client client, User projectManager, Set<User> teamMembers) {
         this.projectId = projectId;
         this.projectName = projectName;
@@ -51,8 +52,6 @@ public class Project {
         this.projectManager = projectManager;
         this.teamMembers = teamMembers;
     }
-
-    // Getters and Setters
     public int getProjectId() {
         return projectId;
     }
