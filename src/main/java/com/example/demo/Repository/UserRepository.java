@@ -1,6 +1,7 @@
 package com.example.demo.Repository;
 
 import com.example.demo.Enums.Role;
+import com.example.demo.Enums.Status;
 import com.example.demo.Models.User;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,6 +20,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     User findByUsernameAndEmail(String username, String email);
     List<User> findByRole(Role role);
     Optional<User> findByUsername(String username);
+    List<User> findByStatus(Status status);
 
     @Modifying
     @Transactional

@@ -2,6 +2,7 @@ package com.example.demo.Service;
 
 import com.example.demo.Models.Milestone;
 import com.example.demo.Models.Task;
+import com.example.demo.Models.User;
 import com.example.demo.Repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,5 +38,9 @@ public class TaskService {
             }
         }
         return null;
+    }
+
+    public List<Task> getTasksAssignedToUser(User user) {
+        return taskRepository.findByAssignedTo(user);
     }
 }

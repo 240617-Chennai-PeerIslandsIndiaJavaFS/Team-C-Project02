@@ -2,11 +2,13 @@ package com.example.demo.Service;
 
 import com.example.demo.Enums.Role;
 import com.example.demo.Enums.Status;
+import com.example.demo.Exception.ResourceNotFoundException;
 import com.example.demo.Models.Client;
 import com.example.demo.Models.Project;
 import com.example.demo.Models.Task;
 import com.example.demo.Models.User;
 import com.example.demo.Repository.ProjectRepository;
+import com.example.demo.Repository.TaskRepository;
 import com.example.demo.Repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
@@ -27,6 +29,8 @@ public class UserService {
     @Autowired
     private ProjectRepository projectRepository;
 
+    @Autowired
+    private TaskRepository taskRepository;
 
     public User authenticateUser(String email, String password) {
         User user = userRepository.findByEmail(email);
@@ -213,6 +217,44 @@ public class UserService {
 
         return tasks;
     }
+
+    @Transactional
+    public void reassignTasksAndDeleteUser(int oldUserId, int newUserId) {
+        // Fetch the user to delete
+        User userToDelete = userRepository.findById(oldUserId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Fetch the new user to whom tasks will be reassigned
+        User newUser = userRepository.findById(newUserId)
+                .orElseThrow(() -> new RuntimeException("New user not found"));
+
+        // Find all tasks assigned to the user to be deleted
+        List<Task> tasksToReassign = taskRepository.findByAssignedTo(userToDelete);
+
+        // Reassign each task to the new user
+        for (Task task : tasksToReassign) {
+            task.setAssignedTo(newUser);
+            taskRepository.save(task);
+        }
+
+        // Delete the old user
+        userRepository.delete(userToDelete);
+    }
+
+    @Transactional
+    public void deleteUserById(int userId) {
+        // Check if the user exists before attempting to delete
+        if (userRepository.existsById(userId)) {
+            userRepository.deleteById(userId);
+        } else {
+            throw new RuntimeException("User not found with ID: " + userId);
+        }
+    }
+
+    public List<User> getInactiveUsers() {
+        return userRepository.findByStatus(Status.INACTIVE);
+    }
+
 
 
 }

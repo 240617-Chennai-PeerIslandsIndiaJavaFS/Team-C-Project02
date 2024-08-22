@@ -1,6 +1,7 @@
 package com.example.demo.Repository;
 
 import com.example.demo.Models.Task;
+import com.example.demo.Models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,4 +15,6 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
     List<Task> findTasksByUsername(@Param("username") String username);
 
     Task findByTaskId(int taskId);
+
+    List<Task> findByAssignedTo(User assignedTo);
 }

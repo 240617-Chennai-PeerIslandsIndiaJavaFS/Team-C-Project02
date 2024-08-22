@@ -131,4 +131,31 @@ public class UserController {
         return userService.getTasksByManagerName(managerName);
     }
 
+    @DeleteMapping("/reassign-tasks-and-delete/{oldUserId}/{newUserId}")
+    public ResponseEntity<String> reassignTasksAndDeleteUser(
+            @PathVariable int oldUserId,
+            @PathVariable int newUserId) {
+        try {
+            userService.reassignTasksAndDeleteUser(oldUserId, newUserId);
+            return ResponseEntity.ok("Tasks reassigned and user deleted successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/inactive")
+    public List<User> getInactiveUsers() {
+        return userService.getInactiveUsers();
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable("id") int userId) {
+        try {
+            userService.deleteUserById(userId);
+            return ResponseEntity.ok("User deleted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+    }
+
 }
