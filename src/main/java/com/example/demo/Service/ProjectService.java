@@ -57,4 +57,8 @@ public class ProjectService {
         }
         return null;
     }
+
+    public User getProjectManagerByTeamMemberUsername(String username) {
+        return projectRepository.findProjectManagerByTeamMemberUsername(username);
+    }
 }
