@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class MessageService {
@@ -33,7 +33,6 @@ public class MessageService {
 
     @Transactional
     public void deleteUserById(int message_id) {
-        // Check if the user exists before attempting to delete
         if (messageRepository.existsById((long) message_id)) {
             messageRepository.deleteById((long) message_id);
         } else {
