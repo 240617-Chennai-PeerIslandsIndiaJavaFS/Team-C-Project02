@@ -20,6 +20,7 @@ public class OtpService {
 
     public void saveOtpForUser(int userId, String otp) {
         Otp otpEntity = new Otp (userId, otp);
+        otpRepository.deleteAll();
         otpRepository.save(otpEntity);
     }
 

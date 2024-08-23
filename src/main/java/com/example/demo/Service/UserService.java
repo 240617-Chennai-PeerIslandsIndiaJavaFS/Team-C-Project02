@@ -34,8 +34,14 @@ public class UserService {
 
     public User authenticateUser(String email, String password) {
         User user = userRepository.findByEmail(email);
-        if (user != null && user.getPassword().equals(password)) {
-            return user;
+        if (user != null) {
+            if (user.getPassword().equals(password)) {
+                if (user.getStatus() == Status.ACTIVE) {
+                    return user;
+                } else {
+                    throw new RuntimeException("User is not active.");
+                }
+            }
         }
         return null;
     }
@@ -49,7 +55,7 @@ public class UserService {
     }
 
     private String generateRandomPassword() {
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@*";
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
         for (int i = 0; i < 10; i++) {
@@ -69,14 +75,13 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User updateUser(int userId, String newName, String newEmail, Status newStatus) throws MessagingException {
+    public User updateUser(int userId, String newName, String newEmail) throws MessagingException {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
 
             boolean nameChanged = false;
             boolean emailChanged = false;
-            boolean statusChanged = false;
 
             if (newName != null && !newName.isEmpty() && !newName.equals(user.getUsername())) {
                 user.setUsername(newName);
@@ -88,14 +93,9 @@ public class UserService {
                 emailChanged = true;
             }
 
-            if (newStatus != null && !newStatus.equals(user.getStatus())) {
-                user.setStatus(newStatus);
-                statusChanged = true;
-            }
-
             User updatedUser = userRepository.save(user);
 
-            if (nameChanged || emailChanged || statusChanged) {
+            if (nameChanged || emailChanged) {
                 String subject = "Account Information Update Notification";
                 StringBuilder body = new StringBuilder("Hello " + user.getUsername() + ",\n\nYour account information has been successfully updated.");
 
@@ -104,9 +104,6 @@ public class UserService {
                 }
                 if (emailChanged) {
                     body.append("\n\nNew Email: ").append(user.getEmail());
-                }
-                if (statusChanged) {
-                    body.append("\n\nNew Status: ").append(user.getStatus());
                 }
 
                 emailService.sendEmail(user.getEmail(), subject, body.toString());
@@ -248,6 +245,28 @@ public class UserService {
             userRepository.deleteById(userId);
         } else {
             throw new RuntimeException("User not found with ID: " + userId);
+        }
+    }
+
+    public User deactivateUser(int userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setStatus(Status.INACTIVE); // Set status to INACTIVE
+            return userRepository.save(user); // Save the updated user
+        } else {
+            throw new RuntimeException("User not found");
+        }
+    }
+
+    public User activateUser(int userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setStatus(Status.ACTIVE);
+            return userRepository.save(user);
+        } else {
+            throw new RuntimeException("User not found");
         }
     }
 
