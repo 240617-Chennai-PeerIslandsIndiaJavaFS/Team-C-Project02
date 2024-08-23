@@ -1,6 +1,7 @@
 package com.example.demo.Repository;
 
 import com.example.demo.Models.Project;
+import com.example.demo.Models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,5 +20,8 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 
     @Query("SELECT p FROM Project p WHERE p.projectManager.username = :managerName")
     List<Project> findProjectsByProjectManagerName(@Param("managerName") String managerName);
+
+    @Query("SELECT p.projectManager FROM Project p JOIN p.teamMembers tm WHERE tm.username = :username")
+    User findProjectManagerByTeamMemberUsername(@Param("username") String username);
 
 }

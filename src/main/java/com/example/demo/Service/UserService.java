@@ -255,6 +255,7 @@ public class UserService {
         return userRepository.findByStatus(Status.INACTIVE);
     }
 
-
-
+    public Optional<User> getUserById(int id) {
+        return userRepository.findById(id);
+    }
 }
