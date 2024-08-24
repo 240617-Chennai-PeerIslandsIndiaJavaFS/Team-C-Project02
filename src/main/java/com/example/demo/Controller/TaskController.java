@@ -37,4 +37,11 @@ public class TaskController {
             @RequestParam int milestoneId) {
         return taskService.updateTaskMilestone(taskId, milestoneId);
     }
+
+    @GetMapping("/user/{userId}/project/{projectId}")
+    public ResponseEntity<List<Task>> getTasksByUserIdAndProjectId(@PathVariable int userId, @PathVariable int projectId) {
+        List<Task> tasks = taskService.getTasksByUserIdAndProjectId(userId, projectId);
+        return ResponseEntity.ok(tasks);
+    }
+
 }
