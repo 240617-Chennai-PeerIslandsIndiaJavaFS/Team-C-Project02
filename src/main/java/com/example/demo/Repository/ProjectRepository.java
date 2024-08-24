@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Integer> {
@@ -26,5 +27,8 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 
     @Query("SELECT p FROM Project p JOIN p.teamMembers u WHERE u.username = :username")
     List<Project> findProjectsByUsernameget(@Param("username") String username);
+
+    @Query("SELECT DISTINCT p.projectManager FROM Project p JOIN p.teamMembers tm WHERE tm.username = :username")
+    List<User> findAllProjectManagersByTeamMemberUsername(@Param("username") String username);
 
 }

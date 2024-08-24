@@ -69,4 +69,15 @@ public class ProjectController {
     public List<Project> getProjectsByUsernameget(@PathVariable String username) {
         return projectService.getProjectsByUsernameget(username);
     }
+
+    @GetMapping("/project-managers/team-member/{username}")
+    public List<User> getProjectManagersByTeamMemberUsername(@PathVariable String username) {
+        return projectService.getAllProjectManagersByTeamMemberUsername(username);
+    }
+
+    @GetMapping("/{projectId}/manager")
+    public ResponseEntity<User> getProjectManagerByProjectId(@PathVariable int projectId) {
+        User projectManager = projectService.getProjectManagerByProjectId(projectId);
+        return ResponseEntity.ok(projectManager);
+    }
 }
