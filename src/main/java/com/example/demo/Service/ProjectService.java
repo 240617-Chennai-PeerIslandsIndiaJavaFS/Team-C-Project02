@@ -1,5 +1,6 @@
 package com.example.demo.Service;
 
+import com.example.demo.Exception.ResourceNotFoundException;
 import com.example.demo.Models.Project;
 import com.example.demo.Models.User;
 import com.example.demo.Repository.ProjectRepository;
@@ -64,5 +65,15 @@ public class ProjectService {
 
     public List<Project> getProjectsByUsernameget(String username) {
         return projectRepository.findProjectsByUsernameget(username);
+    }
+
+    public List<User> getAllProjectManagersByTeamMemberUsername(String username) {
+        return projectRepository.findAllProjectManagersByTeamMemberUsername(username);
+    }
+
+    public User getProjectManagerByProjectId(int projectId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
+        return project.getProjectManager();
     }
 }

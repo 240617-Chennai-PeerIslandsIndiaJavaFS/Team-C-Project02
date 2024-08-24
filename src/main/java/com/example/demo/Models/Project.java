@@ -10,7 +10,6 @@ import java.util.Set;
 @Table(name = "project")
 public class Project {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "project_id")
