@@ -64,4 +64,9 @@ public class ProjectController {
     public User getProjectManagerByTeamMember(@RequestParam String username) {
         return projectService.getProjectManagerByTeamMemberUsername(username);
     }
+
+    @GetMapping("/user/{username}")
+    public List<Project> getProjectsByUsernameget(@PathVariable String username) {
+        return projectService.getProjectsByUsernameget(username);
+    }
 }

@@ -61,4 +61,8 @@ public class ProjectService {
     public User getProjectManagerByTeamMemberUsername(String username) {
         return projectRepository.findProjectManagerByTeamMemberUsername(username);
     }
+
+    public List<Project> getProjectsByUsernameget(String username) {
+        return projectRepository.findProjectsByUsernameget(username);
+    }
 }

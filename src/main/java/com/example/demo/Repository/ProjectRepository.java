@@ -24,4 +24,7 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
     @Query("SELECT p.projectManager FROM Project p JOIN p.teamMembers tm WHERE tm.username = :username")
     User findProjectManagerByTeamMemberUsername(@Param("username") String username);
 
+    @Query("SELECT p FROM Project p JOIN p.teamMembers u WHERE u.username = :username")
+    List<Project> findProjectsByUsernameget(@Param("username") String username);
+
 }
