@@ -47,12 +47,20 @@ public class UserService {
     }
 
     public User createUser(User user) throws MessagingException {
+        // Generate a random password
         String password = generateRandomPassword();
+
+        // Set the password for the user
         user.setPassword(password);
+
+        // Save the user to the database
         User createdUser = userRepository.save(user);
+
         sendWelcomeEmail(user.getEmail(), user.getUsername(), password);
+
         return createdUser;
     }
+
 
     private String generateRandomPassword() {
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@*";

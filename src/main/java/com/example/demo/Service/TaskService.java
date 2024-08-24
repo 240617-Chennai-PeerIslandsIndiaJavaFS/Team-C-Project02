@@ -43,4 +43,8 @@ public class TaskService {
     public List<Task> getTasksAssignedToUser(User user) {
         return taskRepository.findByAssignedTo(user);
     }
+
+    public List<Task> getTasksByUserIdAndProjectId(int userId, int projectId) {
+        return taskRepository.findByAssignedTo_useridAndProject_ProjectId(userId, projectId);
+    }
 }
